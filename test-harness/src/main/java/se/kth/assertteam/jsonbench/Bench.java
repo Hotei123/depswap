@@ -104,11 +104,11 @@ public class Bench {
 		String jsonIn = null;
 		ResultReport resultFile = new ResultReport();
 		Runtime runtime = Runtime.getRuntime();
-		long totalMemory_0 = runtime.totalMemory();
+		long freeMemory_0 = runtime.freeMemory();
 		try {
 			jsonIn = readFile(f);
 		} catch (Exception e) {
-			resultFile.setPerformance(ResultKind.FILE_ERROR, runtime.totalMemory() - totalMemory_0);
+			resultFile.setPerformance(ResultKind.FILE_ERROR, freeMemory_0 - runtime.freeMemory());
 			return resultFile;
 		}
 		Object jsonObject = null;
@@ -117,36 +117,36 @@ public class Bench {
 			try {
 				jsonObject = parser.parseString(jsonIn);
 				if(jsonObject == null) {
-					resultFile.setPerformance(ResultKind.NULL_OBJECT, runtime.totalMemory() - totalMemory_0);
+					resultFile.setPerformance(ResultKind.NULL_OBJECT, freeMemory_0 - runtime.freeMemory());
 					return resultFile;
 				}
 			} catch (Exception e) {
-				resultFile.setPerformance(ResultKind.PARSE_EXCEPTION, runtime.totalMemory() - totalMemory_0);
+				resultFile.setPerformance(ResultKind.PARSE_EXCEPTION, freeMemory_0 - runtime.freeMemory());
 				return resultFile;
 			}
 			if(jsonObject != null) {
 				try {
 					jsonOut = parser.print(jsonObject);
 					if(jsonOut.equalsIgnoreCase(jsonIn)) {
-						resultFile.setPerformance(ResultKind.OK, runtime.totalMemory() - totalMemory_0);
+						resultFile.setPerformance(ResultKind.OK, freeMemory_0 - runtime.freeMemory());
 						return resultFile;
 					}
 					if(parser.equivalence(jsonObject,parser.parseString(jsonOut))) {
 						resultFile.setPerformance(ResultKind.EQUIVALENT_OBJECT,
-								runtime.totalMemory() - totalMemory_0);
+								freeMemory_0 - runtime.freeMemory());
 					} else {
 						resultFile.setPerformance(ResultKind.NON_EQUIVALENT_OBJECT,
-								runtime.totalMemory() - totalMemory_0);
+								freeMemory_0 - runtime.freeMemory());
 					}
 					return resultFile;
 				} catch (Exception e) {
 					resultFile.setPerformance(ResultKind.PRINT_EXCEPTION,
-							runtime.totalMemory() - totalMemory_0);
+							freeMemory_0 - runtime.freeMemory());
 					return resultFile;
 				}
 			}
 		} catch (Error e) {
-			resultFile.setPerformance(ResultKind.CRASH, runtime.totalMemory() - totalMemory_0);
+			resultFile.setPerformance(ResultKind.CRASH, freeMemory_0 - runtime.freeMemory());
 			return resultFile;
 		}
 		return null;
@@ -156,11 +156,11 @@ public class Bench {
 		ResultReport resultFile = new ResultReport();
 		String jsonIn = null;
 		Runtime runtime = Runtime.getRuntime();
-		long totalMemory_0 = runtime.totalMemory();
+		long totalMemory_0 = runtime.freeMemory();
 		try {
 			jsonIn = readFile(f);
 		} catch (Exception e) {
-			resultFile.setPerformance(ResultKind.FILE_ERROR, runtime.totalMemory() - totalMemory_0);
+			resultFile.setPerformance(ResultKind.FILE_ERROR, runtime.freeMemory() - totalMemory_0);
 			return resultFile;
 		}
 		try {
@@ -171,17 +171,17 @@ public class Bench {
 					jsonObject = parser.parseString(jsonIn);
 					if (jsonObject != null)
 						resultFile.setPerformance(ResultKind.UNEXPECTED_OBJECT,
-								runtime.totalMemory() - totalMemory_0);
+								runtime.freeMemory() - totalMemory_0);
 					else
 						resultFile.setPerformance(ResultKind.NULL_OBJECT,
-								runtime.totalMemory() - totalMemory_0);
+								runtime.freeMemory() - totalMemory_0);
 					return resultFile;
 				} catch (Exception e) {
-					resultFile.setPerformance(ResultKind.OK, runtime.totalMemory() - totalMemory_0);
+					resultFile.setPerformance(ResultKind.OK, runtime.freeMemory() - totalMemory_0);
 					return resultFile;
 				}
 			} catch (Error e) {
-				resultFile.setPerformance(ResultKind.CRASH, runtime.totalMemory() - totalMemory_0);
+				resultFile.setPerformance(ResultKind.CRASH, runtime.freeMemory() - totalMemory_0);
 				return resultFile;
 			}
 		} catch (Exception e) {
