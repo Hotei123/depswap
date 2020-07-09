@@ -52,12 +52,12 @@ public class Bench {
 		}
 		output.createNewFile();
 		try {
-			Files.write(output.toPath(), "Parser,Category,File,Result\n".getBytes(), StandardOpenOption.APPEND);
+			Files.write(output.toPath(), "Parser,Category,File,Result,MemoryUsed\n".getBytes(), StandardOpenOption.APPEND);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		results.forEach((k,v) -> {
-			String line = parser.getName() + "," + category + "," + k + "," + v.kind + "\n";
+			String line = parser.getName() + "," + category + "," + k + "," + v.kind +  "," + Integer.toString(v.memoryUsed) + "\n";
 			try {
 				Files.write(output.toPath(), line.getBytes(), StandardOpenOption.APPEND);
 			} catch (IOException e) {
