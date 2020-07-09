@@ -12,8 +12,8 @@ public class ResultReport {
     }
 
     public void setPerformance(ResultKind kind, long memoryUsed){
-        kind = kind;
-        memoryUsed = memoryUsed;
+        this.kind = kind;
+        this.memoryUsed = memoryUsed;
     }
 
 }
