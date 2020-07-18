@@ -1,6 +1,5 @@
 package se.kth.assertteam.jsonbench;
 
-
 import se.kth.assertteam.jsonbench.parser.GsonParser;
 import se.kth.assertteam.jsonbench.parser.JsonSimple;
 import se.kth.assertteam.jsonbench.parser.OrgJSON;
