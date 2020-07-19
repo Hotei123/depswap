@@ -44,22 +44,30 @@ print(f'orggson_correct_res_counts: {orggson_correct_res_counts}\n')
 print(f'orggson_errored_res_counts: {orggson_errored_res_counts}\n')
 print(f'orggson_undefined_res_counts: {orggson_undefined_res_counts}\n')
 
-x = [
-    datetime.datetime(2011, 1, 4, 0, 0),
-    datetime.datetime(2011, 1, 5, 0, 0),
-    datetime.datetime(2011, 1, 6, 0, 0)
-]
-x = date2num(x)
-
+x = np.array([1, 2, 3])
 y = [4, 9, 2]
-z = [1, 2, 3]
+z = [1, -2, 3]
 k = [11, 12, 13]
 
-ax = plt.subplot(111)
+ax = plt.subplot(131)
 ax_1 = ax.bar(x - 0.2, y, width=0.2, color='b', align='center')
 ax_2 = ax.bar(x, z, width=0.2, color='g', align='center')
 ax_3 = ax.bar(x + 0.2, k, width=0.2, color='r', align='center')
-# ax.xaxis_date()
 plt.legend((ax_1[0], ax_2[0], ax_3[0]), ('A', 'B', 'C'))
+plt.title('Gson correct')
+
+ax = plt.subplot(132)
+ax_1 = ax.bar(x - 0.2, y, width=0.2, color='b', align='center')
+ax_2 = ax.bar(x, z, width=0.2, color='g', align='center')
+ax_3 = ax.bar(x + 0.2, k, width=0.2, color='r', align='center')
+plt.legend((ax_1[0], ax_2[0], ax_3[0]), ('A', 'B', 'C'))
+plt.title('json-simple correct')
+
+ax = plt.subplot(133)
+ax_1 = ax.bar(x - 0.2, y, width=0.2, color='b', align='center')
+ax_2 = ax.bar(x, z, width=0.2, color='g', align='center')
+ax_3 = ax.bar(x + 0.2, k, width=0.2, color='r', align='center')
+plt.legend((ax_1[0], ax_2[0], ax_3[0]), ('A', 'B', 'C'))
+plt.title('org.json correct')
 
 plt.show()
