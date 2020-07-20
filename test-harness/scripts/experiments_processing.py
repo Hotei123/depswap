@@ -25,17 +25,15 @@ orgjson_errored = pd.read_csv('../results/org.json_errored_results.csv')
 orgjson_undefined = pd.read_csv('../results/org.json_undefined_results.csv')
 
 # Counting categories
-gson_correct_res_counts = counts_from_series(gson_correct.Result)  # {'EQUIVALENT_OBJECT': 54, 'OK': 112}
-gson_errored_res_counts = counts_from_series(gson_errored.Result)  # {'FILE_ERROR': 30, 'OK': 147, 'UNEXPECTED_OBJECT': 145}
-gson_undefined_res_counts = counts_from_series(gson_undefined.Result)  # {'EQUIVALENT_OBJECT': 17, 'FILE_ERROR': 16, 'OK': 24}
-
-js_correct_res_counts = counts_from_series(js_correct.Result)  # {'EQUIVALENT_OBJECT': 79, 'NULL_OBJECT': 1, 'OK': 83, 'PRINT_EXCEPTION': 3}
-js_errored_res_counts = counts_from_series(js_errored.Result)  # {'FILE_ERROR': 30, 'NULL_OBJECT': 1, 'OK': 211, 'UNEXPECTED_OBJECT': 80}
-js_undefined_res_counts = counts_from_series(js_undefined.Result)  # {'EQUIVALENT_OBJECT': 22, 'FILE_ERROR': 16, 'OK': 7, 'PARSE_EXCEPTION': 7, 'PRINT_EXCEPTION': 5}
-
-orggson_correct_res_counts = counts_from_series(orgjson_correct.Result)  # {'EQUIVALENT_OBJECT': 62, 'NON_EQUIVALENT_OBJECT': 11, 'OK': 91, 'PARSE_EXCEPTION': 2}
-orggson_errored_res_counts = counts_from_series(orgjson_errored.Result)  # {'CRASH': 3, 'FILE_ERROR': 30, 'OK': 119, 'UNEXPECTED_OBJECT': 170}
-orggson_undefined_res_counts = counts_from_series(orgjson_undefined.Result)  # {'EQUIVALENT_OBJECT': 25, 'FILE_ERROR': 16, 'NON_EQUIVALENT_OBJECT': 6, 'OK': 7, 'PARSE_EXCEPTION': 3}
+count_dict = {'gson_correct': counts_from_series(gson_correct.Result),
+              'gson_errored': counts_from_series(gson_errored.Result),
+              'gson_undefined': counts_from_series(gson_undefined.Result),
+              'js_correct': counts_from_series(js_correct.Result),
+              'js_errored': counts_from_series(js_errored.Result),
+              'js_undefined': counts_from_series(js_undefined.Result),
+              'orggson_correct': counts_from_series(orgjson_correct.Result),
+              'orggson_errored': counts_from_series(orgjson_errored.Result),
+              'orggson_undefined': counts_from_series(orgjson_undefined.Result)}
 
 correct_cats = np.unique(gson_correct.Result.unique().tolist() + js_correct.Result.unique().tolist() +
                          orgjson_correct.Result.unique().tolist())
@@ -47,15 +45,15 @@ undefined_cats = np.unique(gson_undefined.Result.unique().tolist() + js_undefine
 print(f'\nCorrect categories: {correct_cats}\n')
 print(f'\nErrored categories: {errored_cats}\n')
 print(f'\nUndefined categories: {undefined_cats}\n')
-print(f'gson_correct_res_counts: {gson_correct_res_counts}\n')
-print(f'gson_errored_res_counts: {gson_errored_res_counts}\n')
-print(f'gson_undefined_res_counts: {gson_undefined_res_counts}\n')
-print(f'js_correct_res_counts: {js_correct_res_counts}\n')
-print(f'js_errored_res_counts: {js_errored_res_counts}\n')
-print(f'js_undefined_res_counts: {js_undefined_res_counts}\n')
-print(f'orggson_correct_res_counts: {orggson_correct_res_counts}\n')
-print(f'orggson_errored_res_counts: {orggson_errored_res_counts}\n')
-print(f'orggson_undefined_res_counts: {orggson_undefined_res_counts}\n')
+print(f'gson_correct_res_counts: {count_dict["gson_correct"]}\n')
+print(f'gson_errored_res_counts: {count_dict["gson_errored"]}\n')
+print(f'gson_undefined_res_counts: {count_dict["gson_undefined"]}\n')
+print(f'js_correct_res_counts: {count_dict["js_correct"]}\n')
+print(f'js_errored_res_counts: {count_dict["js_errored"]}\n')
+print(f'js_undefined_res_counts: {count_dict["js_undefined"]}\n')
+print(f'orggson_correct_res_counts: {count_dict["orggson_correct"]}\n')
+print(f'orggson_errored_res_counts: {count_dict["orggson_errored"]}\n')
+print(f'orggson_undefined_res_counts: {count_dict["orggson_undefined"]}\n')
 
 
 x = np.array(range(5))
