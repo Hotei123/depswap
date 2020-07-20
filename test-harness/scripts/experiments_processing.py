@@ -4,6 +4,13 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import date2num
 import datetime
 
+
+def counts_from_series(series):
+    counts = np.unique(series, return_counts=True)
+    counts = dict(zip(counts[0], counts[1]))
+    return counts
+
+
 # File import
 gson_correct = pd.read_csv('../results/Gson_correct_results.csv')
 gson_errored = pd.read_csv('../results/Gson_errored_results.csv')
@@ -18,26 +25,17 @@ orgjson_errored = pd.read_csv('../results/org.json_errored_results.csv')
 orgjson_undefined = pd.read_csv('../results/org.json_undefined_results.csv')
 
 # Counting categories
-gson_correct_res_counts = np.unique(gson_correct.Result, return_counts=True)
-gson_correct_res_counts = dict(zip(gson_correct_res_counts[0], gson_correct_res_counts[1]))
-gson_errored_res_counts = np.unique(gson_errored.Result, return_counts=True)
-gson_errored_res_counts = dict(zip(gson_errored_res_counts[0], gson_errored_res_counts[1]))
-gson_undefined_res_counts = np.unique(gson_undefined.Result, return_counts=True)
-gson_undefined_res_counts = dict(zip(gson_undefined_res_counts[0], gson_undefined_res_counts[1]))
+gson_correct_res_counts = counts_from_series(gson_correct.Result)  # {'EQUIVALENT_OBJECT': 54, 'OK': 112}
+gson_errored_res_counts = counts_from_series(gson_errored.Result)  # {'FILE_ERROR': 30, 'OK': 147, 'UNEXPECTED_OBJECT': 145}
+gson_undefined_res_counts = counts_from_series(gson_undefined.Result)  # {'EQUIVALENT_OBJECT': 17, 'FILE_ERROR': 16, 'OK': 24}
 
-js_correct_res_counts = np.unique(js_correct.Result, return_counts=True)
-js_correct_res_counts = dict(zip(js_correct_res_counts[0], js_correct_res_counts[1]))
-js_errored_res_counts = np.unique(js_errored.Result, return_counts=True)
-js_errored_res_counts = dict(zip(js_errored_res_counts[0], js_errored_res_counts[1]))
-js_undefined_res_counts = np.unique(js_undefined.Result, return_counts=True)
-js_undefined_res_counts = dict(zip(js_undefined_res_counts[0], js_undefined_res_counts[1]))
+js_correct_res_counts = counts_from_series(js_correct.Result)  # {'EQUIVALENT_OBJECT': 79, 'NULL_OBJECT': 1, 'OK': 83, 'PRINT_EXCEPTION': 3}
+js_errored_res_counts = counts_from_series(js_errored.Result)  # {'FILE_ERROR': 30, 'NULL_OBJECT': 1, 'OK': 211, 'UNEXPECTED_OBJECT': 80}
+js_undefined_res_counts = counts_from_series(js_undefined.Result)  # {'EQUIVALENT_OBJECT': 22, 'FILE_ERROR': 16, 'OK': 7, 'PARSE_EXCEPTION': 7, 'PRINT_EXCEPTION': 5}
 
-orggson_correct_res_counts = np.unique(orgjson_correct.Result, return_counts=True)
-orggson_correct_res_counts = dict(zip(orggson_correct_res_counts[0], orggson_correct_res_counts[1]))
-orggson_errored_res_counts = np.unique(orgjson_errored.Result, return_counts=True)
-orggson_errored_res_counts = dict(zip(orggson_errored_res_counts[0], orggson_errored_res_counts[1]))
-orggson_undefined_res_counts = np.unique(orgjson_undefined.Result, return_counts=True)
-orggson_undefined_res_counts = dict(zip(orggson_undefined_res_counts[0], orggson_undefined_res_counts[1]))
+orggson_correct_res_counts = counts_from_series(orgjson_correct.Result)  # {'EQUIVALENT_OBJECT': 62, 'NON_EQUIVALENT_OBJECT': 11, 'OK': 91, 'PARSE_EXCEPTION': 2}
+orggson_errored_res_counts = counts_from_series(orgjson_errored.Result)  # {'CRASH': 3, 'FILE_ERROR': 30, 'OK': 119, 'UNEXPECTED_OBJECT': 170}
+orggson_undefined_res_counts = counts_from_series(orgjson_undefined.Result)  # {'EQUIVALENT_OBJECT': 25, 'FILE_ERROR': 16, 'NON_EQUIVALENT_OBJECT': 6, 'OK': 7, 'PARSE_EXCEPTION': 3}
 
 correct_cats = np.unique(gson_correct.Result.unique().tolist() + js_correct.Result.unique().tolist() +
                          orgjson_correct.Result.unique().tolist())
@@ -64,10 +62,6 @@ x = np.array(range(5))
 y = [4, 9, 2, 5, 7]
 z = [1, -2, 3, 4, 6]
 k = [8, 12, 13, 5, 6]
-
-a = np.array([0, 3, 0, 1, 0, 1, 2, 1, 0, 0, 0, 0, 1, 3, 4])
-unique, counts = np.unique(a, return_counts=True)
-print(dict(zip(unique, counts)))
 
 ax = plt.subplot(311)
 width = .25
