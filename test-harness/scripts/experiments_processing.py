@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.dates import date2num
-import datetime
 
 
 def counts_from_series(series):
@@ -15,7 +13,6 @@ def complete_dict(dict_incomplete, dict_full):
     for key in dict_full:
         if key not in dict_incomplete:
             dict_incomplete[key] = 0
-    # return dict_incomplete
 
 
 # File import
@@ -42,6 +39,12 @@ count_dict = {'gson_correct': counts_from_series(gson_correct.Result),
               'orggson_errored': counts_from_series(orgjson_errored.Result),
               'orggson_undefined': counts_from_series(orgjson_undefined.Result)}
 
+# Correct categories
+# 'EQUIVALENT_OBJECT', 'OK', 'NON_EQUIVALENT_OBJECT', 'NULL_OBJECT', 'PARSE_EXCEPTION', 'PRINT_EXCEPTION'
+# Categories with errors
+# 'FILE_ERROR', 'OK', 'UNEXPECTED_OBJECT', 'CRASH', 'NULL_OBJECT'
+# Undefined categories
+# 'EQUIVALENT_OBJECT', 'FILE_ERROR', 'OK', 'NON_EQUIVALENT_OBJECT', 'PARSE_EXCEPTION', 'PRINT_EXCEPTION'
 correct_cats = np.unique(gson_correct.Result.unique().tolist() + js_correct.Result.unique().tolist() +
                          orgjson_correct.Result.unique().tolist())
 errored_cats = np.unique(gson_errored.Result.unique().tolist() + js_errored.Result.unique().tolist() +
@@ -60,15 +63,15 @@ for key in count_dict:
 print(f'\nCorrect categories: {correct_cats}\n')
 print(f'\nErrored categories: {errored_cats}\n')
 print(f'\nUndefined categories: {undefined_cats}\n')
-print(f'gson_correct_res_counts: {count_dict["gson_correct"]}\n')
-print(f'gson_errored_res_counts: {count_dict["gson_errored"]}\n')
-print(f'gson_undefined_res_counts: {count_dict["gson_undefined"]}\n')
-print(f'js_correct_res_counts: {count_dict["js_correct"]}\n')
-print(f'js_errored_res_counts: {count_dict["js_errored"]}\n')
-print(f'js_undefined_res_counts: {count_dict["js_undefined"]}\n')
-print(f'orggson_correct_res_counts: {count_dict["orggson_correct"]}\n')
-print(f'orggson_errored_res_counts: {count_dict["orggson_errored"]}\n')
-print(f'orggson_undefined_res_counts: {count_dict["orggson_undefined"]}\n')
+print(f'gson_correct_res_counts: {list(count_dict["gson_correct"].keys())}\n')
+print(f'gson_errored_res_counts: {list(count_dict["gson_errored"].keys())}\n')
+print(f'gson_undefined_res_counts: {list(count_dict["gson_undefined"].keys())}\n')
+print(f'js_correct_res_counts: {list(count_dict["js_correct"].keys())}\n')
+print(f'js_errored_res_counts: {list(count_dict["js_errored"].keys())}\n')
+print(f'js_undefined_res_counts: {list(count_dict["js_undefined"].keys())}\n')
+print(f'orggson_correct_res_counts: {list(count_dict["orggson_correct"].keys())}\n')
+print(f'orggson_errored_res_counts: {list(count_dict["orggson_errored"].keys())}\n')
+print(f'orggson_undefined_res_counts: {list(count_dict["orggson_undefined"].keys())}\n')
 
 
 x = np.array(range(5))
