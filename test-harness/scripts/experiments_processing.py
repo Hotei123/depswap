@@ -57,12 +57,11 @@ for key in count_dict:
 
 # Draw a title and some text to the app:
 '''
-# This is the document title
+# Results of json replacement experiments with maven
 
-This is some _markdown_.
+The correct, errored and undefined files have the following categories:
 '''
 
-'The correct, errored and undefined files have the following categories:'
 f'\nCorrect categories: {correct_cats}\n'
 f'\nErrored categories: {errored_cats}\n'
 f'\nUndefined categories: {undefined_cats}\n'
@@ -87,26 +86,19 @@ plt.ylim((0, 175))
 
 st.pyplot()
 
-# ax_1 = ax.bar(x - width, y, width=width, color='b', align='center')
-# ax_2 = ax.bar(x, z, width=width, color='g', align='center')
-# ax_3 = ax.bar(x + width, k, width=width, color='r', align='center')
-# ax_4 = ax.bar(x + 2 * width, w, width=width, color='k', align='center')
-# plt.legend((ax_1[0], ax_2[0], ax_3[0], ax_4[0]), ('A', 'B', 'C', 'D'))
-# plt.title('Correct files')
-# plt.xticks(x, ['x1', 'x2', 'x3'])
-# plt.tick_params(axis='x', rotation=45)
+x_gson = np.array(range(len(errored_cats))) * bar_width
+x_js = x_gson + len(errored_cats) * bar_width + bar_width
+x_orgjson = x_js + len(errored_cats) * bar_width + bar_width
+ax = plt.bar(x_gson, [count_dict['gson_errored'][key] for key in errored_cats], width=bar_width,
+             color=color_list[:len(errored_cats)], align='center')
+plt.bar(x_js, [count_dict['js_errored'][key] for key in errored_cats], width=bar_width,
+        color=color_list[:len(errored_cats)], align='center')
+plt.bar(x_orgjson, [count_dict['orggson_errored'][key] for key in errored_cats], width=bar_width,
+        color=color_list[:len(errored_cats)], align='center')
+plt.title('Files with errors')
+plt.xticks([2.5 * bar_width, 8.5 * bar_width, 14.5 * bar_width], ['GSON', 'json-simple', 'org.json'])
+plt.legend([ax[0], ax[1], ax[2], ax[3], ax[4]], errored_cats)
+# plt.ylim((0, 175))
 
-# ax = plt.subplot(312)
-# ax_1 = ax.bar(x - width, y, width=width, color='b', align='center')
-# ax_2 = ax.bar(x, z, width=width, color='g', align='center')
-# ax_3 = ax.bar(x + width, k, width=width, color='r', align='center')
-# plt.legend((ax_1[0], ax_2[0], ax_3[0]), ('A', 'B', 'C'))
-# plt.title('Files with errors')
-#
-# ax = plt.subplot(313)
-# ax_1 = ax.bar(x - width, y, width=width, color='b', align='center')
-# ax_2 = ax.bar(x, z, width=width, color='g', align='center')
-# ax_3 = ax.bar(x + width, k, width=width, color='r', align='center')
-# plt.legend((ax_1[0], ax_2[0], ax_3[0]), ('A', 'B', 'C'))
-# plt.title('Undefined files')
-# plt.tight_layout(pad=2)
+st.pyplot()
+
