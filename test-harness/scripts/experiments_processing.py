@@ -102,3 +102,18 @@ plt.legend([ax[0], ax[1], ax[2], ax[3], ax[4]], errored_cats)
 
 st.pyplot()
 
+x_gson = np.array(range(len(undefined_cats))) * bar_width
+x_js = x_gson + len(undefined_cats) * bar_width + bar_width
+x_orgjson = x_js + len(undefined_cats) * bar_width + bar_width
+ax = plt.bar(x_gson, [count_dict['gson_undefined'][key] for key in undefined_cats], width=bar_width,
+             color=color_list[:len(undefined_cats)], align='center')
+plt.bar(x_js, [count_dict['js_undefined'][key] for key in undefined_cats], width=bar_width,
+        color=color_list[:len(undefined_cats)], align='center')
+plt.bar(x_orgjson, [count_dict['orggson_undefined'][key] for key in undefined_cats], width=bar_width,
+        color=color_list[:len(undefined_cats)], align='center')
+plt.title('Undefined files')
+plt.xticks([1.5 * bar_width, 9.5 * bar_width, 16.5 * bar_width], ['GSON', 'json-simple', 'org.json'])
+plt.legend([ax[0], ax[1], ax[2], ax[3], ax[4], ax[5]], errored_cats)
+plt.ylim((0, 40))
+
+st.pyplot()
