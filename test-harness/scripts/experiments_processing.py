@@ -40,13 +40,6 @@ count_dict = {'gson_correct': counts_from_series(gson_correct.Result),
               'orggson_errored': counts_from_series(orgjson_errored.Result),
               'orggson_undefined': counts_from_series(orgjson_undefined.Result)}
 
-'Correct categories:'
-'EQUIVALENT_OBJECT, OK, NON_EQUIVALENT_OBJECT, NULL_OBJECT, PARSE_EXCEPTION, PRINT_EXCEPTION'
-'Categories with errors:'
-'FILE_ERROR, OK, UNEXPECTED_OBJECT, CRASH, NULL_OBJECT'
-'Undefined categories:'
-'EQUIVALENT_OBJECT, FILE_ERROR, OK, NON_EQUIVALENT_OBJECT, PARSE_EXCEPTION, PRINT_EXCEPTION'
-
 correct_cats = np.unique(gson_correct.Result.unique().tolist() + js_correct.Result.unique().tolist() +
                          orgjson_correct.Result.unique().tolist())
 errored_cats = np.unique(gson_errored.Result.unique().tolist() + js_errored.Result.unique().tolist() +
@@ -62,27 +55,21 @@ for key in count_dict:
     elif key[-9:] == 'undefined':
         complete_dict(count_dict[key], undefined_cats)
 
-print(f'\nCorrect categories: {correct_cats}\n')
-print(f'\nErrored categories: {errored_cats}\n')
-print(f'\nUndefined categories: {undefined_cats}\n')
-print(f'gson_correct_res_counts: {list(count_dict["gson_correct"].keys())}\n')
-print(f'gson_errored_res_counts: {list(count_dict["gson_errored"].keys())}\n')
-print(f'gson_undefined_res_counts: {list(count_dict["gson_undefined"].keys())}\n')
-print(f'js_correct_res_counts: {list(count_dict["js_correct"].keys())}\n')
-print(f'js_errored_res_counts: {list(count_dict["js_errored"].keys())}\n')
-print(f'js_undefined_res_counts: {list(count_dict["js_undefined"].keys())}\n')
-print(f'orggson_correct_res_counts: {list(count_dict["orggson_correct"].keys())}\n')
-print(f'orggson_errored_res_counts: {list(count_dict["orggson_errored"].keys())}\n')
-print(f'orggson_undefined_res_counts: {list(count_dict["orggson_undefined"].keys())}\n')
+# Draw a title and some text to the app:
+'''
+# This is the document title
 
-x = 1.2 * np.array(range(3))
-y = [2, 4, 6, 20]
-z = [1, -2, 3]
-k = [8, 12, 13]
-w = [6, 10, 15]
+This is some _markdown_.
+'''
+
+'The correct, errored and undefined files have the following categories:'
+f'\nCorrect categories: {correct_cats}\n'
+f'\nErrored categories: {errored_cats}\n'
+f'\nUndefined categories: {undefined_cats}\n'
 
 color_list = ['blue', 'black', 'yellow', 'green', 'red', 'orange']
 bar_width = .25
+
 x_gson = np.array(range(len(correct_cats))) * bar_width
 x_js = x_gson + len(correct_cats) * bar_width + bar_width
 x_orgjson = x_js + len(correct_cats) * bar_width + bar_width
