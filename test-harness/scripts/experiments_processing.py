@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import streamlit as st
 
 
 def counts_from_series(series):
@@ -39,12 +40,13 @@ count_dict = {'gson_correct': counts_from_series(gson_correct.Result),
               'orggson_errored': counts_from_series(orgjson_errored.Result),
               'orggson_undefined': counts_from_series(orgjson_undefined.Result)}
 
-# Correct categories
-# 'EQUIVALENT_OBJECT', 'OK', 'NON_EQUIVALENT_OBJECT', 'NULL_OBJECT', 'PARSE_EXCEPTION', 'PRINT_EXCEPTION'
-# Categories with errors
-# 'FILE_ERROR', 'OK', 'UNEXPECTED_OBJECT', 'CRASH', 'NULL_OBJECT'
-# Undefined categories
-# 'EQUIVALENT_OBJECT', 'FILE_ERROR', 'OK', 'NON_EQUIVALENT_OBJECT', 'PARSE_EXCEPTION', 'PRINT_EXCEPTION'
+'Correct categories:'
+'EQUIVALENT_OBJECT, OK, NON_EQUIVALENT_OBJECT, NULL_OBJECT, PARSE_EXCEPTION, PRINT_EXCEPTION'
+'Categories with errors:'
+'FILE_ERROR, OK, UNEXPECTED_OBJECT, CRASH, NULL_OBJECT'
+'Undefined categories:'
+'EQUIVALENT_OBJECT, FILE_ERROR, OK, NON_EQUIVALENT_OBJECT, PARSE_EXCEPTION, PRINT_EXCEPTION'
+
 correct_cats = np.unique(gson_correct.Result.unique().tolist() + js_correct.Result.unique().tolist() +
                          orgjson_correct.Result.unique().tolist())
 errored_cats = np.unique(gson_errored.Result.unique().tolist() + js_errored.Result.unique().tolist() +
@@ -73,35 +75,51 @@ print(f'orggson_correct_res_counts: {list(count_dict["orggson_correct"].keys())}
 print(f'orggson_errored_res_counts: {list(count_dict["orggson_errored"].keys())}\n')
 print(f'orggson_undefined_res_counts: {list(count_dict["orggson_undefined"].keys())}\n')
 
+x = 1.2 * np.array(range(3))
+y = [2, 4, 6, 20]
+z = [1, -2, 3]
+k = [8, 12, 13]
+w = [6, 10, 15]
 
-x = np.array(range(5))
-y = [4, 9, 2, 5, 7]
-z = [1, -2, 3, 4, 6]
-k = [8, 12, 13, 5, 6]
+color_list = ['blue', 'black', 'yellow', 'green', 'red', 'orange']
+bar_width = .25
+x_gson = np.array(range(len(correct_cats))) * bar_width
+x_js = x_gson + len(correct_cats) * bar_width + bar_width
+x_orgjson = x_js + len(correct_cats) * bar_width + bar_width
 
-ax = plt.subplot(311)
-width = .25
-ax_1 = ax.bar(x - width, y, width=width, color='b', align='center')
-ax_2 = ax.bar(x, z, width=width, color='g', align='center')
-ax_3 = ax.bar(x + width, k, width=width, color='r', align='center')
-plt.legend((ax_1[0], ax_2[0], ax_3[0]), ('A', 'B', 'C'))
+ax = plt.bar(x_gson, [count_dict['gson_correct'][key] for key in correct_cats], width=bar_width,
+             color=color_list[:len(correct_cats)], align='center')
+plt.bar(x_js, [count_dict['js_correct'][key] for key in correct_cats], width=bar_width,
+        color=color_list[:len(correct_cats)], align='center')
+plt.bar(x_orgjson, [count_dict['orggson_correct'][key] for key in correct_cats], width=bar_width,
+        color=color_list[:len(correct_cats)], align='center')
 plt.title('Correct files')
-plt.xticks(x, ['x1', 'x2', 'x3'])
-plt.tick_params(axis='x', rotation=45)
+plt.xticks([2.5 * bar_width, 9.5 * bar_width, 16.5 * bar_width], ['GSON', 'json-simple', 'org.json'])
+plt.legend([ax[0], ax[1], ax[2], ax[3], ax[4], ax[5]], correct_cats)
+plt.ylim((0, 175))
 
-ax = plt.subplot(312)
-ax_1 = ax.bar(x - width, y, width=width, color='b', align='center')
-ax_2 = ax.bar(x, z, width=width, color='g', align='center')
-ax_3 = ax.bar(x + width, k, width=width, color='r', align='center')
-plt.legend((ax_1[0], ax_2[0], ax_3[0]), ('A', 'B', 'C'))
-plt.title('Files with errors')
+st.pyplot()
 
-ax = plt.subplot(313)
-ax_1 = ax.bar(x - width, y, width=width, color='b', align='center')
-ax_2 = ax.bar(x, z, width=width, color='g', align='center')
-ax_3 = ax.bar(x + width, k, width=width, color='r', align='center')
-plt.legend((ax_1[0], ax_2[0], ax_3[0]), ('A', 'B', 'C'))
-plt.title('Undefined files')
-plt.tight_layout(pad=2)
+# ax_1 = ax.bar(x - width, y, width=width, color='b', align='center')
+# ax_2 = ax.bar(x, z, width=width, color='g', align='center')
+# ax_3 = ax.bar(x + width, k, width=width, color='r', align='center')
+# ax_4 = ax.bar(x + 2 * width, w, width=width, color='k', align='center')
+# plt.legend((ax_1[0], ax_2[0], ax_3[0], ax_4[0]), ('A', 'B', 'C', 'D'))
+# plt.title('Correct files')
+# plt.xticks(x, ['x1', 'x2', 'x3'])
+# plt.tick_params(axis='x', rotation=45)
 
-plt.show()
+# ax = plt.subplot(312)
+# ax_1 = ax.bar(x - width, y, width=width, color='b', align='center')
+# ax_2 = ax.bar(x, z, width=width, color='g', align='center')
+# ax_3 = ax.bar(x + width, k, width=width, color='r', align='center')
+# plt.legend((ax_1[0], ax_2[0], ax_3[0]), ('A', 'B', 'C'))
+# plt.title('Files with errors')
+#
+# ax = plt.subplot(313)
+# ax_1 = ax.bar(x - width, y, width=width, color='b', align='center')
+# ax_2 = ax.bar(x, z, width=width, color='g', align='center')
+# ax_3 = ax.bar(x + width, k, width=width, color='r', align='center')
+# plt.legend((ax_1[0], ax_2[0], ax_3[0]), ('A', 'B', 'C'))
+# plt.title('Undefined files')
+# plt.tight_layout(pad=2)
