@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
+from scipy.stats import wilcoxon
 
 
 def counts_from_series(series):
@@ -14,6 +15,27 @@ def complete_dict(dict_incomplete, dict_full):
     for key in dict_full:
         if key not in dict_incomplete:
             dict_incomplete[key] = 0
+
+
+def plot_3hist_group(cat_list, count_dict_tuple, x_tick_coords, plot_title, y_lim=None):
+    color_list = ['blue', 'black', 'yellow', 'green', 'red', 'orange']
+    bar_width = .25
+
+    x_gson = np.array(range(len(cat_list))) * bar_width
+    x_js = x_gson + len(cat_list) * bar_width + bar_width
+    x_orgjson = x_js + len(cat_list) * bar_width + bar_width
+
+    ax = plt.bar(x_gson, [count_dict_tuple[0][key] for key in cat_list], width=bar_width,
+                 color=color_list[:len(cat_list)], align='center')
+    plt.bar(x_js, [count_dict_tuple[1][key] for key in cat_list], width=bar_width,
+            color=color_list[:len(cat_list)], align='center')
+    plt.bar(x_orgjson, [count_dict_tuple[2][key] for key in cat_list], width=bar_width,
+            color=color_list[:len(cat_list)], align='center')
+    plt.title(plot_title)
+    plt.xticks(x_tick_coords * bar_width, ['GSON', 'json-simple', 'org.json'])
+    plt.legend(ax, cat_list)
+    if y_lim is not None:
+        plt.ylim(y_lim)
 
 
 # File import
@@ -59,61 +81,34 @@ for key in count_dict:
 '''
 # Results of json replacement experiments with maven
 
-The correct, errored and undefined files have the following categories:
+The correct, errored and undefined files have the following labels:
 '''
 
 f'\nCorrect categories: {correct_cats}\n'
 f'\nErrored categories: {errored_cats}\n'
 f'\nUndefined categories: {undefined_cats}\n'
 
-color_list = ['blue', 'black', 'yellow', 'green', 'red', 'orange']
-bar_width = .25
+"""
+The counts of labels can be seen in these plots:
+"""
 
-x_gson = np.array(range(len(correct_cats))) * bar_width
-x_js = x_gson + len(correct_cats) * bar_width + bar_width
-x_orgjson = x_js + len(correct_cats) * bar_width + bar_width
-
-ax = plt.bar(x_gson, [count_dict['gson_correct'][key] for key in correct_cats], width=bar_width,
-             color=color_list[:len(correct_cats)], align='center')
-plt.bar(x_js, [count_dict['js_correct'][key] for key in correct_cats], width=bar_width,
-        color=color_list[:len(correct_cats)], align='center')
-plt.bar(x_orgjson, [count_dict['orggson_correct'][key] for key in correct_cats], width=bar_width,
-        color=color_list[:len(correct_cats)], align='center')
-plt.title('Correct files')
-plt.xticks([2.5 * bar_width, 9.5 * bar_width, 16.5 * bar_width], ['GSON', 'json-simple', 'org.json'])
-plt.legend([ax[0], ax[1], ax[2], ax[3], ax[4], ax[5]], correct_cats)
-plt.ylim((0, 175))
-
+plot_3hist_group(correct_cats, (count_dict['gson_correct'], count_dict['js_correct'], count_dict['orggson_correct']),
+                 np.array([2.5, 9.5, 16.5]), 'Correct files', y_lim=(0, 175))
 st.pyplot()
 
-x_gson = np.array(range(len(errored_cats))) * bar_width
-x_js = x_gson + len(errored_cats) * bar_width + bar_width
-x_orgjson = x_js + len(errored_cats) * bar_width + bar_width
-ax = plt.bar(x_gson, [count_dict['gson_errored'][key] for key in errored_cats], width=bar_width,
-             color=color_list[:len(errored_cats)], align='center')
-plt.bar(x_js, [count_dict['js_errored'][key] for key in errored_cats], width=bar_width,
-        color=color_list[:len(errored_cats)], align='center')
-plt.bar(x_orgjson, [count_dict['orggson_errored'][key] for key in errored_cats], width=bar_width,
-        color=color_list[:len(errored_cats)], align='center')
-plt.title('Files with errors')
-plt.xticks([2.5 * bar_width, 8.5 * bar_width, 14.5 * bar_width], ['GSON', 'json-simple', 'org.json'])
-plt.legend([ax[0], ax[1], ax[2], ax[3], ax[4]], errored_cats)
-# plt.ylim((0, 175))
-
+plot_3hist_group(errored_cats, (count_dict['gson_errored'], count_dict['js_errored'], count_dict['orggson_errored']),
+                 np.array([2.5, 9.5, 16.5]), 'Files with errors')
 st.pyplot()
 
-x_gson = np.array(range(len(undefined_cats))) * bar_width
-x_js = x_gson + len(undefined_cats) * bar_width + bar_width
-x_orgjson = x_js + len(undefined_cats) * bar_width + bar_width
-ax = plt.bar(x_gson, [count_dict['gson_undefined'][key] for key in undefined_cats], width=bar_width,
-             color=color_list[:len(undefined_cats)], align='center')
-plt.bar(x_js, [count_dict['js_undefined'][key] for key in undefined_cats], width=bar_width,
-        color=color_list[:len(undefined_cats)], align='center')
-plt.bar(x_orgjson, [count_dict['orggson_undefined'][key] for key in undefined_cats], width=bar_width,
-        color=color_list[:len(undefined_cats)], align='center')
-plt.title('Undefined files')
-plt.xticks([1.5 * bar_width, 9.5 * bar_width, 16.5 * bar_width], ['GSON', 'json-simple', 'org.json'])
-plt.legend([ax[0], ax[1], ax[2], ax[3], ax[4], ax[5]], errored_cats)
-plt.ylim((0, 40))
-
+plot_3hist_group(undefined_cats, (count_dict['gson_undefined'], count_dict['js_undefined'],
+                                  count_dict['orggson_undefined']),
+                 np.array([1.5, 9.5, 16.5]), 'Undefined files', y_lim=(0, 40))
 st.pyplot()
+
+"""
+### Frequency comparison
+"""
+
+d = [6, 8, 14, 16, 23, 24, 28, 29, 41, -48, 49, 56, 60, -67, 75]
+w, p = wilcoxon(d)
+w, p
