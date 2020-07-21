@@ -11,6 +11,13 @@ def counts_from_series(series):
     return counts
 
 
+def complete_dict(dict_incomplete, dict_full):
+    for key in dict_full:
+        if key not in dict_incomplete:
+            dict_incomplete[key] = 0
+    # return dict_incomplete
+
+
 # File import
 gson_correct = pd.read_csv('../results/Gson_correct_results.csv')
 gson_errored = pd.read_csv('../results/Gson_errored_results.csv')
@@ -41,6 +48,14 @@ errored_cats = np.unique(gson_errored.Result.unique().tolist() + js_errored.Resu
                          orgjson_errored.Result.unique().tolist())
 undefined_cats = np.unique(gson_undefined.Result.unique().tolist() + js_undefined.Result.unique().tolist() +
                            orgjson_undefined.Result.unique().tolist())
+
+for key in count_dict:
+    if key[-7:] == 'correct':
+        complete_dict(count_dict[key], correct_cats)
+    elif key[-7:] == 'errored':
+        complete_dict(count_dict[key], errored_cats)
+    elif key[-9:] == 'undefined':
+        complete_dict(count_dict[key], undefined_cats)
 
 print(f'\nCorrect categories: {correct_cats}\n')
 print(f'\nErrored categories: {errored_cats}\n')
