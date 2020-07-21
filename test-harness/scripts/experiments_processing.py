@@ -77,19 +77,11 @@ for key in count_dict:
     elif key[-9:] == 'undefined':
         complete_dict(count_dict[key], undefined_cats)
 
-# Draw a title and some text to the app:
-'''
-# Results of json replacement experiments with maven
-
-The correct, errored and undefined files have the following labels:
-'''
-
-f'\nCorrect categories: {correct_cats}\n'
-f'\nErrored categories: {errored_cats}\n'
-f'\nUndefined categories: {undefined_cats}\n'
-
 """
-The counts of labels can be seen in these plots:
+# Results of json library replacement experiments with maven
+
+### Category count plot
+The counts of labels for each json library, for files _correct_, _errored_ and _undefined_ can be seen in these plots:
 """
 
 plot_3hist_group(correct_cats, (count_dict['gson_correct'], count_dict['js_correct'], count_dict['orggson_correct']),
@@ -105,10 +97,36 @@ plot_3hist_group(undefined_cats, (count_dict['gson_undefined'], count_dict['js_u
                  np.array([1.5, 9.5, 16.5]), 'Undefined files', y_lim=(0, 40))
 st.pyplot()
 
-"""
-### Frequency comparison
-"""
+"""### Statistical tests for comparing category counts between libraries
+After looking at the data of each of the 
+previous 3 plots, we had the null hypothesis that the counts of the categories for each library come from the same 
+population, and that therefore there is no diversity between the libraries in this respect. The obtained high p-values
+of the [Wilcoxon signed-rank test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html)
+agree with our hypothesis, and therefore, so far we have no evidence to reject it."""
 
-d = [6, 8, 14, 16, 23, 24, 28, 29, 41, -48, 49, 56, 60, -67, 75]
-w, p = wilcoxon(d)
-w, p
+# Todo: function for Wilcoxon test
+# Todo: data bench description
+
+# Correct files
+d_correct_gson_js = [count_dict['gson_correct'][k] - count_dict['js_correct'][k] for k in correct_cats]
+_, p_correct_gson_js = wilcoxon(d_correct_gson_js)
+d_correct_gson_orgjson = [count_dict['gson_correct'][k] - count_dict['orggson_correct'][k] for k in correct_cats]
+_, p_correct_gson_orgjson = wilcoxon(d_correct_gson_orgjson)
+d_correct_orgjson_js = [count_dict['orggson_correct'][k] - count_dict['js_correct'][k] for k in correct_cats]
+_, p_correct_orgjson_js = wilcoxon(d_correct_orgjson_js)
+
+st.write(f'p_correct_gson_js = {np.round(p_correct_gson_js, 3)}')
+st.write(f'p_correct_gson_orgjson = {np.round(p_correct_gson_orgjson, 3)}')
+st.write(f'p_correct_orgjson_js = {np.round(p_correct_orgjson_js, 3)}')
+
+# Files with errors
+d_errored_gson_js = [count_dict['gson_errored'][k] - count_dict['js_errored'][k] for k in errored_cats]
+_, p_errored_gson_js = wilcoxon(d_errored_gson_js)
+d_errored_gson_orgjson = [count_dict['gson_errored'][k] - count_dict['orggson_errored'][k] for k in errored_cats]
+_, p_errored_gson_orgjson = wilcoxon(d_errored_gson_orgjson)
+d_errored_orgjson_js = [count_dict['orggson_errored'][k] - count_dict['js_errored'][k] for k in errored_cats]
+_, p_errored_orgjson_js = wilcoxon(d_errored_orgjson_js)
+
+st.write(f'p_errored_gson_js = {np.round(p_errored_gson_js, 3)}')
+st.write(f'p_errored_gson_orgjson = {np.round(p_errored_gson_orgjson, 3)}')
+st.write(f'p_errored_orgjson_js = {np.round(p_errored_orgjson_js, 3)}')
