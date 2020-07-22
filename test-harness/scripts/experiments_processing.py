@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 from scipy.stats import wilcoxon
+from numpy import round as npr
 
 
 def counts_from_series(series):
@@ -38,6 +39,20 @@ def plot_3hist_group(cat_list, count_dict_tuple, x_tick_coords, plot_title, y_li
         plt.ylim(y_lim)
 
 
+def wilcoxon_p_val_from_2_dicts(dict_pair, cat_list):
+    """Returns the p-value of the Wilcoxon test, for the paired dictionaries of dict_pair (they have the same keys)"""
+    diff_list = [dict_pair[0][k] - dict_pair[1][k] for k in cat_list]
+    return wilcoxon(diff_list)[1]
+
+
+def wilcox_p_val_3_dicts(dict_3_list, cat_list):
+    """Returns the wilcoxon p-value of the test of these pairs of elements of dict_3_list: (first, second),
+    (first, third), and (second, third)"""
+    return wilcoxon_p_val_from_2_dicts((dict_3_list[0], dict_3_list[1]), cat_list), \
+           wilcoxon_p_val_from_2_dicts((dict_3_list[0], dict_3_list[2]), cat_list), \
+           wilcoxon_p_val_from_2_dicts((dict_3_list[1], dict_3_list[2]), cat_list)
+
+
 # File import
 gson_correct = pd.read_csv('../results/Gson_correct_results.csv')
 gson_errored = pd.read_csv('../results/Gson_errored_results.csv')
@@ -58,9 +73,9 @@ count_dict = {'gson_correct': counts_from_series(gson_correct.Result),
               'js_correct': counts_from_series(js_correct.Result),
               'js_errored': counts_from_series(js_errored.Result),
               'js_undefined': counts_from_series(js_undefined.Result),
-              'orggson_correct': counts_from_series(orgjson_correct.Result),
-              'orggson_errored': counts_from_series(orgjson_errored.Result),
-              'orggson_undefined': counts_from_series(orgjson_undefined.Result)}
+              'orgjson_correct': counts_from_series(orgjson_correct.Result),
+              'orgjson_errored': counts_from_series(orgjson_errored.Result),
+              'orgjson_undefined': counts_from_series(orgjson_undefined.Result)}
 
 correct_cats = np.unique(gson_correct.Result.unique().tolist() + js_correct.Result.unique().tolist() +
                          orgjson_correct.Result.unique().tolist())
@@ -84,16 +99,16 @@ for key in count_dict:
 The counts of labels for each json library, for files _correct_, _errored_ and _undefined_ can be seen in these plots:
 """
 
-plot_3hist_group(correct_cats, (count_dict['gson_correct'], count_dict['js_correct'], count_dict['orggson_correct']),
+plot_3hist_group(correct_cats, (count_dict['gson_correct'], count_dict['js_correct'], count_dict['orgjson_correct']),
                  np.array([2.5, 9.5, 16.5]), 'Correct files', y_lim=(0, 175))
 st.pyplot()
 
-plot_3hist_group(errored_cats, (count_dict['gson_errored'], count_dict['js_errored'], count_dict['orggson_errored']),
+plot_3hist_group(errored_cats, (count_dict['gson_errored'], count_dict['js_errored'], count_dict['orgjson_errored']),
                  np.array([2.5, 9.5, 16.5]), 'Files with errors')
 st.pyplot()
 
 plot_3hist_group(undefined_cats, (count_dict['gson_undefined'], count_dict['js_undefined'],
-                                  count_dict['orggson_undefined']),
+                                  count_dict['orgjson_undefined']),
                  np.array([1.5, 9.5, 16.5]), 'Undefined files', y_lim=(0, 40))
 st.pyplot()
 
@@ -104,29 +119,25 @@ population, and that therefore there is no diversity between the libraries in th
 of the [Wilcoxon signed-rank test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html)
 agree with our hypothesis, and therefore, so far we have no evidence to reject it."""
 
-# Todo: function for Wilcoxon test
 # Todo: data bench description
 
 # Correct files
-d_correct_gson_js = [count_dict['gson_correct'][k] - count_dict['js_correct'][k] for k in correct_cats]
-_, p_correct_gson_js = wilcoxon(d_correct_gson_js)
-d_correct_gson_orgjson = [count_dict['gson_correct'][k] - count_dict['orggson_correct'][k] for k in correct_cats]
-_, p_correct_gson_orgjson = wilcoxon(d_correct_gson_orgjson)
-d_correct_orgjson_js = [count_dict['orggson_correct'][k] - count_dict['js_correct'][k] for k in correct_cats]
-_, p_correct_orgjson_js = wilcoxon(d_correct_orgjson_js)
-
-st.write(f'p_correct_gson_js = {np.round(p_correct_gson_js, 3)}')
-st.write(f'p_correct_gson_orgjson = {np.round(p_correct_gson_orgjson, 3)}')
-st.write(f'p_correct_orgjson_js = {np.round(p_correct_orgjson_js, 3)}')
-
+p_corr_gs_js, p_corr_gs_orgj, p_corr_js_orgj = wilcox_p_val_3_dicts((count_dict['gson_correct'],
+                                                                     count_dict['js_correct'],
+                                                                     count_dict['orgjson_correct']),
+                                                                    correct_cats)
 # Files with errors
-d_errored_gson_js = [count_dict['gson_errored'][k] - count_dict['js_errored'][k] for k in errored_cats]
-_, p_errored_gson_js = wilcoxon(d_errored_gson_js)
-d_errored_gson_orgjson = [count_dict['gson_errored'][k] - count_dict['orggson_errored'][k] for k in errored_cats]
-_, p_errored_gson_orgjson = wilcoxon(d_errored_gson_orgjson)
-d_errored_orgjson_js = [count_dict['orggson_errored'][k] - count_dict['js_errored'][k] for k in errored_cats]
-_, p_errored_orgjson_js = wilcoxon(d_errored_orgjson_js)
-
-st.write(f'p_errored_gson_js = {np.round(p_errored_gson_js, 3)}')
-st.write(f'p_errored_gson_orgjson = {np.round(p_errored_gson_orgjson, 3)}')
-st.write(f'p_errored_orgjson_js = {np.round(p_errored_orgjson_js, 3)}')
+p_err_gs_js, p_err_gs_orgj, p_err_js_orgj = wilcox_p_val_3_dicts((count_dict['gson_errored'],
+                                                                  count_dict['js_errored'],
+                                                                  count_dict['orgjson_errored']),
+                                                                 errored_cats)
+# Undefined files
+p_udf_gs_js, p_udf_gs_orgj, p_udf_js_orgj = wilcox_p_val_3_dicts((count_dict['gson_undefined'],
+                                                                  count_dict['js_undefined'],
+                                                                  count_dict['orgjson_undefined']),
+                                                                 undefined_cats)
+corr_mat = pd.DataFrame([['gson-js', npr(p_corr_gs_js, 3), npr(p_err_gs_js, 3), npr(p_udf_gs_js, 3)],
+                         ['gson-orgj', npr(p_corr_gs_orgj, 3), npr(p_err_gs_orgj, 3), npr(p_udf_gs_orgj, 3)],
+                         ['js-orgj', npr(p_corr_js_orgj, 3), npr(p_err_js_orgj, 3), npr(p_udf_js_orgj, 3)]],
+                        columns=['Paired tests', 'Correct p-vals ', 'Errored p-vals', 'Undefined p-vals'])
+corr_mat
