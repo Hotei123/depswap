@@ -159,9 +159,11 @@ public class Bench {
 		Runtime runtime = Runtime.getRuntime();
 		long freeMemory_0;
 		try {
-			freeMemory_0 = runtime.freeMemory();
-			jsonIn = readFile(f);
-			resultFile.memoryUsedList.set(0, freeMemory_0 - runtime.freeMemory());
+			for (int i = 0; i < resultFile.memoryUsedList.size(); i++) {
+				freeMemory_0 = runtime.freeMemory();
+				jsonIn = readFile(f);
+				resultFile.memoryUsedList.set(i, freeMemory_0 - runtime.freeMemory());
+			}
 		} catch (Exception e) {
 			resultFile.kind = ResultKind.FILE_ERROR;
 			return resultFile;
