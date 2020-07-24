@@ -9,6 +9,7 @@ import javax.xml.transform.Result;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -78,7 +79,7 @@ public class Bench {
 	}
 
 	public static String readFile(File f) throws IOException {
-		return Files.lines(f.toPath(), Charset.forName("UTF-8")).collect(Collectors.joining("\n"));
+		return Files.lines(f.toPath(), StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
 	}
 
 	public static Map<String,ResultReport> testAllCorrectJson(File inDir, JP parser) throws IOException {
@@ -153,10 +154,11 @@ public class Bench {
 		ResultReport resultFile = new ResultReport();
 		String jsonIn = null;
 		Runtime runtime = Runtime.getRuntime();
-		long totalMemory_0 = runtime.freeMemory();
-		ArrayList<Long> memoryUsedList = (ArrayList<Long>) Collections.nCopies(resultFile.numberRuns, 0L);
+		long freeMemory_0;
 		try {
+			freeMemory_0 = runtime.freeMemory();
 			jsonIn = readFile(f);
+			resultFile.memoryUsedList.set(0, freeMemory_0 - runtime.freeMemory());
 		} catch (Exception e) {
 			resultFile.kind = ResultKind.FILE_ERROR;
 			return resultFile;
@@ -184,8 +186,6 @@ public class Bench {
 			return null;
 		}
 	}
-
-
 	//read file
 	//get jsons
 	//parse test
