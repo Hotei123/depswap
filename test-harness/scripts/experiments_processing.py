@@ -98,10 +98,27 @@ for key in count_dict:
 # Results of json library replacement experiments with maven
 
 ### Introduction
-We have a bench of 166 correct, 322 errored and 57 undefined json files. In the following sections will be analyzed the labels
-diversity of maven libraries gson, org.json and json-simple with respect to such bench, the diversity of heap use, and
-other metrics too. 
+We have a bench of 166 correct, 322 errored and 57 undefined json files. In the following sections 
+will be analyzed the category diversity of maven libraries _gson_, _org.json_ and _json-simple_ with respect to such bench, 
+the diversity of heap use, and other metrics too. The files containing the output of the experiments in java are the 
+following: """
+java_filenames = pd.DataFrame([['Gson_correct_results.csv', 'Gson_errored_results.csv', 'Gson_undefined_results.csv'],
+                               ['json-simple_correct_results.csv', 'json-simple_errored_results.csv',
+                                'json-simple_undefined_results.csv'],
+                               ['org.json_correct_results.csv', 'org.json_errored_results.csv',
+                                'org.json_undefined_results.csv']], columns=['gson', 'json-simple', 'org.json'])
+java_filenames
 
+"""
+They all have the same format. An extract of _Gson_correct_results.csv_ looks like this:
+"""
+
+gson_sample = gson_correct.head(50)
+gson_sample = gson_sample[gson_sample.columns[:10]]
+gson_sample['File'] = ['...' + filename[-15:] for filename in gson_sample['File']]
+gson_sample
+
+"""
 ### Category count plot
 The counts of labels for each json library, for files _correct_, _errored_ and _undefined_ can be seen in these plots:
 """
@@ -147,3 +164,7 @@ corr_mat = pd.DataFrame([['gson-js', npr(p_corr_gs_js, 3), npr(p_err_gs_js, 3), 
                          ['js-orgj', npr(p_corr_js_orgj, 3), npr(p_err_js_orgj, 3), npr(p_udf_js_orgj, 3)]],
                         columns=['Paired tests', 'Correct p-vals ', 'Errored p-vals', 'Undefined p-vals'])
 corr_mat
+
+"""
+### Heap usage analysis
+"""
