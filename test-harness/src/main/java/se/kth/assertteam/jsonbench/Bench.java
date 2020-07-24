@@ -48,7 +48,12 @@ public class Bench {
 			output.delete();
 		}
 		output.createNewFile();
-		String headerString = "Parser,Category,File,Result,MemoryUsed\n";
+		String headerString = "Parser,Category,File,Result";
+		List<String> keysAsArray = new ArrayList<String>(results.keySet());
+		for (int i = 0; i < results.get(keysAsArray.get(0)).memoryUsedList.size(); i++) {
+			headerString += ",MemoryUsed_" + Integer.toString(i);
+		}
+		headerString += "\n";
 		try {
 			Files.write(output.toPath(), "Parser,Category,File,Result,MemoryUsed\n".getBytes(), StandardOpenOption.APPEND);
 		} catch (IOException e) {
