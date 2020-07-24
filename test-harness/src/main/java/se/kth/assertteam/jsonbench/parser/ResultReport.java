@@ -8,7 +8,7 @@ import java.util.List;
 public class ResultReport {
     public ResultKind kind;
     public ArrayList<Long> memoryUsedList = new ArrayList<Long>();
-    public Integer numberRuns = 100;
+    public Integer numberRuns = 1000;
 
     public ResultReport(){
         kind = null;

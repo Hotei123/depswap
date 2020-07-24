@@ -98,7 +98,7 @@ for key in count_dict:
 # Results of json library replacement experiments with maven
 
 ### Introduction
-We have a bench of 166 correct, 322 errored and 57 json files. In the following sections will be analyzed the labels
+We have a bench of 166 correct, 322 errored and 57 undefined json files. In the following sections will be analyzed the labels
 diversity of maven libraries gson, org.json and json-simple with respect to such bench, the diversity of heap use, and
 other metrics too. 
 
