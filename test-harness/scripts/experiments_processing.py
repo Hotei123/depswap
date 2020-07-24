@@ -1,3 +1,5 @@
+"""This file is better run with the command _streamlit run experiments_processing.py_, in order to visualize the output
+in the browser."""
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -95,6 +97,11 @@ for key in count_dict:
 """
 # Results of json library replacement experiments with maven
 
+### Introduction
+We have a bench of 166 correct, 322 errored and 57 json files. In the following sections will be analyzed the labels
+diversity of maven libraries gson, org.json and json-simple with respect to such bench, the diversity of heap use, and
+other metrics too. 
+
 ### Category count plot
 The counts of labels for each json library, for files _correct_, _errored_ and _undefined_ can be seen in these plots:
 """
@@ -117,9 +124,8 @@ After looking at the data of each of the
 previous 3 plots, we had the null hypothesis that the counts of the categories for each library come from the same 
 population, and that therefore there is no diversity between the libraries in this respect. The obtained high p-values
 of the [Wilcoxon signed-rank test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html)
-agree with our hypothesis, and therefore, so far we have no evidence to reject it."""
-
-# Todo: data bench description
+agree with our hypothesis, and therefore, so far we have no evidence to reject it. This result makes sense, since
+the structure of files is expected to be recognized by the libraries in more or less the same way."""
 
 # Correct files
 p_corr_gs_js, p_corr_gs_orgj, p_corr_js_orgj = wilcox_p_val_3_dicts((count_dict['gson_correct'],

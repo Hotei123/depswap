@@ -12,10 +12,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Bench {
@@ -56,7 +53,8 @@ public class Bench {
 			e.printStackTrace();
 		}
 		results.forEach((k,v) -> {
-			String line = parser.getName() + "," + category + "," + k + "," + v.kind +  "," + Long.toString(v.memoryUsed) + "\n";
+			String line = parser.getName() + "," + category + "," + k + "," + v.kind +  "," +
+					Long.toString(v.memoryUsedList.get(0)) + "\n";
 			try {
 				Files.write(output.toPath(), line.getBytes(), StandardOpenOption.APPEND);
 			} catch (IOException e) {
@@ -103,11 +101,14 @@ public class Bench {
 		String jsonIn = null;
 		ResultReport resultFile = new ResultReport();
 		Runtime runtime = Runtime.getRuntime();
-		long freeMemory_0 = runtime.freeMemory();
+		long freeMemory_0;
+		ArrayList<Long> memoryUsedList = resultFile.memoryUsedList;
 		try {
+			freeMemory_0 = runtime.freeMemory();
 			jsonIn = readFile(f);
+			resultFile.memoryUsedList.set(0, freeMemory_0 - runtime.freeMemory());
 		} catch (Exception e) {
-			resultFile.setPerformance(ResultKind.FILE_ERROR, freeMemory_0 - runtime.freeMemory());
+			resultFile.kind = ResultKind.FILE_ERROR;
 			return resultFile;
 		}
 		Object jsonObject = null;
@@ -116,36 +117,33 @@ public class Bench {
 			try {
 				jsonObject = parser.parseString(jsonIn);
 				if(jsonObject == null) {
-					resultFile.setPerformance(ResultKind.NULL_OBJECT, freeMemory_0 - runtime.freeMemory());
+					resultFile.kind = ResultKind.NULL_OBJECT;
 					return resultFile;
 				}
 			} catch (Exception e) {
-				resultFile.setPerformance(ResultKind.PARSE_EXCEPTION, freeMemory_0 - runtime.freeMemory());
+				resultFile.kind = ResultKind.PARSE_EXCEPTION;
 				return resultFile;
 			}
 			if(jsonObject != null) {
 				try {
 					jsonOut = parser.print(jsonObject);
 					if(jsonOut.equalsIgnoreCase(jsonIn)) {
-						resultFile.setPerformance(ResultKind.OK, freeMemory_0 - runtime.freeMemory());
+						resultFile.setPerformance(ResultKind.OK, memoryUsedList);
 						return resultFile;
 					}
 					if(parser.equivalence(jsonObject,parser.parseString(jsonOut))) {
-						resultFile.setPerformance(ResultKind.EQUIVALENT_OBJECT,
-								freeMemory_0 - runtime.freeMemory());
+						resultFile.kind = ResultKind.EQUIVALENT_OBJECT;
 					} else {
-						resultFile.setPerformance(ResultKind.NON_EQUIVALENT_OBJECT,
-								freeMemory_0 - runtime.freeMemory());
+						resultFile.kind = ResultKind.NON_EQUIVALENT_OBJECT;
 					}
 					return resultFile;
 				} catch (Exception e) {
-					resultFile.setPerformance(ResultKind.PRINT_EXCEPTION,
-							freeMemory_0 - runtime.freeMemory());
+					resultFile.kind = ResultKind.PRINT_EXCEPTION;
 					return resultFile;
 				}
 			}
 		} catch (Error e) {
-			resultFile.setPerformance(ResultKind.CRASH, freeMemory_0 - runtime.freeMemory());
+			resultFile.kind = ResultKind.CRASH;
 			return resultFile;
 		}
 		return null;
@@ -156,10 +154,11 @@ public class Bench {
 		String jsonIn = null;
 		Runtime runtime = Runtime.getRuntime();
 		long totalMemory_0 = runtime.freeMemory();
+		ArrayList<Long> memoryUsedList = (ArrayList<Long>) Collections.nCopies(resultFile.numberRuns, 0L);
 		try {
 			jsonIn = readFile(f);
 		} catch (Exception e) {
-			resultFile.setPerformance(ResultKind.FILE_ERROR, runtime.freeMemory() - totalMemory_0);
+			resultFile.kind = ResultKind.FILE_ERROR;
 			return resultFile;
 		}
 		try {
@@ -169,18 +168,16 @@ public class Bench {
 				try {
 					jsonObject = parser.parseString(jsonIn);
 					if (jsonObject != null)
-						resultFile.setPerformance(ResultKind.UNEXPECTED_OBJECT,
-								runtime.freeMemory() - totalMemory_0);
+						resultFile.kind = ResultKind.UNEXPECTED_OBJECT;
 					else
-						resultFile.setPerformance(ResultKind.NULL_OBJECT,
-								runtime.freeMemory() - totalMemory_0);
+						resultFile.kind = ResultKind.NULL_OBJECT;
 					return resultFile;
 				} catch (Exception e) {
-					resultFile.setPerformance(ResultKind.OK, runtime.freeMemory() - totalMemory_0);
+					resultFile.kind = ResultKind.OK;
 					return resultFile;
 				}
 			} catch (Error e) {
-				resultFile.setPerformance(ResultKind.CRASH, runtime.freeMemory() - totalMemory_0);
+				resultFile.kind = ResultKind.CRASH;
 				return resultFile;
 			}
 		} catch (Exception e) {

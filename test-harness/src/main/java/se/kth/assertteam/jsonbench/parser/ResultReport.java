@@ -2,18 +2,24 @@ package se.kth.assertteam.jsonbench.parser;
 
 import se.kth.assertteam.jsonbench.ResultKind;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ResultReport {
     public ResultKind kind;
-    public long memoryUsed;
+    public ArrayList<Long> memoryUsedList = new ArrayList<Long>();
+    public Integer numberRuns = 100;
 
     public ResultReport(){
         kind = null;
-        memoryUsed = 0;
+        for (int i = 0; i < numberRuns; i++) {
+            memoryUsedList.add(0L);
+        }
     }
 
-    public void setPerformance(ResultKind kind, long memoryUsed){
+    public void setPerformance(ResultKind kind, ArrayList<Long> memoryUsedList){
         this.kind = kind;
-        this.memoryUsed = memoryUsed;
+        this.memoryUsedList = memoryUsedList;
     }
 
 }
