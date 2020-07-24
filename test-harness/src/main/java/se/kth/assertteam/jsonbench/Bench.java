@@ -50,18 +50,22 @@ public class Bench {
 		output.createNewFile();
 		String headerString = "Parser,Category,File,Result";
 		List<String> keysAsArray = new ArrayList<String>(results.keySet());
-		for (int i = 0; i < results.get(keysAsArray.get(0)).memoryUsedList.size(); i++) {
+		int memoryStringRowLen = results.get(keysAsArray.get(0)).memoryUsedList.size();
+		for (int i = 0; i < memoryStringRowLen; i++) {
 			headerString += ",MemoryUsed_" + Integer.toString(i);
 		}
 		headerString += "\n";
 		try {
-			Files.write(output.toPath(), "Parser,Category,File,Result,MemoryUsed\n".getBytes(), StandardOpenOption.APPEND);
+			Files.write(output.toPath(), headerString.getBytes(), StandardOpenOption.APPEND);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		results.forEach((k,v) -> {
-			String line = parser.getName() + "," + category + "," + k + "," + v.kind +  "," +
-					Long.toString(v.memoryUsedList.get(0)) + "\n";
+			String line = parser.getName() + "," + category + "," + k + "," + v.kind;
+			for (long i: v.memoryUsedList) {
+				line += "," + Long.toString(i);
+			}
+			line += "\n";
 			try {
 				Files.write(output.toPath(), line.getBytes(), StandardOpenOption.APPEND);
 			} catch (IOException e) {
