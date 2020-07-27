@@ -55,6 +55,41 @@ def wilcox_p_val_3_dicts(dict_3_list, cat_list):
            wilcoxon_p_val_from_2_dicts((dict_3_list[1], dict_3_list[2]), cat_list)
 
 
+def get_mean_var(results_df, library):
+    memory_cols = [col for col in results_df.columns if col[:11] == 'MemoryUsed_']
+    return pd.concat([results_df[['File']],
+                      results_df[memory_cols].mean(axis=1).to_frame(name=f'{library}_memory_mean'),
+                      results_df[memory_cols].var(axis=1).to_frame(name=f'{library}_memory_var')], axis=1)
+
+
+def plot_memory_mean(memory_df):
+    plt.bar(range(memory_df.shape[0]), memory_df.gson_memory_mean)
+    plt.title('gson memory mean')
+    st.pyplot(clear_figure=True)
+
+    plt.bar(range(memory_df.shape[0]), memory_df['j-simple_memory_mean'])
+    plt.title('json-simple memory mean')
+    st.pyplot()
+
+    plt.bar(range(memory_df.shape[0]), memory_df['org.json_memory_mean'])
+    plt.title('org.json memory mean')
+    st.pyplot()
+
+
+def plot_memory_var(memory_df):
+    plt.bar(range(memory_df.shape[0]), memory_df.gson_memory_var)
+    plt.title('gson memory variance')
+    st.pyplot(clear_figure=True)
+
+    plt.bar(range(memory_df.shape[0]), memory_df['j-simple_memory_var'])
+    plt.title('json-simple memory variance')
+    st.pyplot()
+
+    plt.bar(range(memory_df.shape[0]), memory_df['org.json_memory_var'])
+    plt.title('org.json memory variance')
+    st.pyplot()
+
+
 # File import
 gson_correct = pd.read_csv('../results/Gson_correct_results.csv')
 gson_errored = pd.read_csv('../results/Gson_errored_results.csv')
@@ -167,4 +202,41 @@ corr_mat
 
 """
 ### Heap usage analysis
+
+Most of times each single json file from the bench is read, the change in used heap is zero. That's why each file was
+read 1000 times, in order to obtain meaningful mean values of heap usage. The change in heap is stored in the columns
+_MemoryUsed_, as can be seen in the example in the introduction. 
 """
+# Todo: find relationship between file size and heap use
+
+gson_correct_mean_var = get_mean_var(gson_correct, 'gson')
+gson_errored_mean_var = get_mean_var(gson_errored, 'gson')
+gson_undefined_mean_var = get_mean_var(gson_undefined, 'gson')
+
+js_correct_mean_var = get_mean_var(js_correct, 'j-simple')
+js_errored_mean_var = get_mean_var(js_errored, 'j-simple')
+js_undefined_mean_var = get_mean_var(js_undefined, 'j-simple')
+
+orgjson_correct_mean_var = get_mean_var(orgjson_correct, 'org.json')
+orgjson_errored_mean_var = get_mean_var(orgjson_errored, 'org.json')
+orgjson_undefined_mean_var = get_mean_var(orgjson_undefined, 'org.json')
+
+# Joining results of 3 libraries for each case
+correct_mean_var = gson_correct_mean_var.merge(js_correct_mean_var,
+                                               on='File').merge(orgjson_correct_mean_var, on='File')
+errored_mean_var = gson_errored_mean_var.merge(js_errored_mean_var,
+                                               on='File').merge(orgjson_errored_mean_var, on='File')
+undefined_mean_var = gson_undefined_mean_var.merge(js_undefined_mean_var,
+                                                   on='File').merge(orgjson_undefined_mean_var, on='File')
+"""_Correct files mean memory_:"""
+plot_memory_mean(correct_mean_var)
+"""_Errored files mean memory_:"""
+plot_memory_mean(errored_mean_var)
+"""_Undefined files mean memory_:"""
+plot_memory_mean(undefined_mean_var)
+"""_Correct files memory variance_:"""
+plot_memory_var(correct_mean_var)
+"""_Errored files memory variance_:"""
+plot_memory_var(errored_mean_var)
+"""_Undefined files memory variance_:"""
+plot_memory_var(undefined_mean_var)
