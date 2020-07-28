@@ -154,7 +154,7 @@ gson_sample['File'] = ['...' + filename[-15:] for filename in gson_sample['File'
 gson_sample
 
 """
-### Category count plot
+### Diversity with respect to category count
 The counts of labels for each json library, for files _correct_, _errored_ and _undefined_ can be seen in these plots:
 """
 
@@ -171,36 +171,39 @@ plot_3hist_group(undefined_cats, (count_dict['gson_undefined'], count_dict['js_u
                  np.array([1.5, 9.5, 16.5]), 'Undefined files', y_lim=(0, 40))
 st.pyplot()
 
-"""### Statistical tests for comparing category counts between libraries
-After looking at the data of each of the 
-previous 3 plots, we had the null hypothesis that the counts of the categories for each library come from the same 
-population, and that therefore there is no diversity between the libraries in this respect. The obtained high p-values
-of the [Wilcoxon signed-rank test](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wilcoxon.html)
-agree with our hypothesis, and therefore, so far we have no evidence to reject it. This result makes sense, since
-the structure of files is expected to be recognized by the libraries in more or less the same way."""
+"""After looking at the data of each of the previous 3 plots, we had the null hypothesis $H_0$ that the counts of the 
+categories for each library come from the same population, and that therefore there is no diversity between the 
+libraries in this respect. The obtained high p-values of the Friedman test (see references at the end of the 
+document) agree with our hypothesis, and therefore, so far we have no evidence to reject it. This result makes sense, 
+since the structure of files is expected to be recognized by the libraries in more or less the same way. The results 
+of the tests are the following: """
 
-# Correct files
-p_corr_gs_js, p_corr_gs_orgj, p_corr_js_orgj = wilcox_p_val_3_dicts((count_dict['gson_correct'],
-                                                                     count_dict['js_correct'],
-                                                                     count_dict['orgjson_correct']),
-                                                                    correct_cats)
-# Files with errors
-p_err_gs_js, p_err_gs_orgj, p_err_js_orgj = wilcox_p_val_3_dicts((count_dict['gson_errored'],
-                                                                  count_dict['js_errored'],
-                                                                  count_dict['orgjson_errored']),
-                                                                 errored_cats)
-# Undefined files
-p_udf_gs_js, p_udf_gs_orgj, p_udf_js_orgj = wilcox_p_val_3_dicts((count_dict['gson_undefined'],
-                                                                  count_dict['js_undefined'],
-                                                                  count_dict['orgjson_undefined']),
-                                                                 undefined_cats)
-corr_mat = pd.DataFrame([['gson-js', npr(p_corr_gs_js, 3), npr(p_err_gs_js, 3), npr(p_udf_gs_js, 3)],
-                         ['gson-orgj', npr(p_corr_gs_orgj, 3), npr(p_err_gs_orgj, 3), npr(p_udf_gs_orgj, 3)],
-                         ['js-orgj', npr(p_corr_js_orgj, 3), npr(p_err_js_orgj, 3), npr(p_udf_js_orgj, 3)]],
-                        columns=['Paired tests', 'Correct p-vals ', 'Errored p-vals', 'Undefined p-vals'])
-corr_mat
+friedman_cat_count_correct = friedmanchisquare([count_dict['gson_correct'][key] for key in correct_cats],
+                                               [count_dict['js_correct'][key] for key in correct_cats],
+                                               [count_dict['orgjson_correct'][key] for key in correct_cats])
+friedman_cat_count_errored = friedmanchisquare([count_dict['gson_errored'][key] for key in errored_cats],
+                                               [count_dict['js_errored'][key] for key in errored_cats],
+                                               [count_dict['orgjson_errored'][key] for key in errored_cats])
+friedman_cat_count_undefined = friedmanchisquare([count_dict['gson_undefined'][key] for key in undefined_cats],
+                                                 [count_dict['js_undefined'][key] for key in undefined_cats],
+                                                 [count_dict['orgjson_undefined'][key] for key in undefined_cats])
 
 """
+Friedman test for $H_0$ with correct files:
+"""
+friedman_cat_count_correct
+"""
+Friedman test for $H_0$ with errored files:
+"""
+friedman_cat_count_errored
+"""
+Friedman test for $H_0$ with undefined files:
+"""
+friedman_cat_count_undefined
+
+
+"""
+
 ### Heap usage analysis
 
 Most of times each single json file from the bench is read, the change in used heap is zero. That's why each file was
@@ -241,19 +244,23 @@ plot_memory_var(errored_mean_var)
 """_Undefined files memory variance_:"""
 plot_memory_var(undefined_mean_var)
 
-# https://www.sciencedirect.com/topics/medicine-and-dentistry/friedman-test
-# https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.friedmanchisquare.html
-# https://link.springer.com/chapter/10.1007/978-3-319-30634-6_7
-friedman_correct = friedmanchisquare(correct_mean_var.gson_memory_mean, correct_mean_var['j-simple_memory_mean'],
-                                     correct_mean_var['org.json_memory_mean'])
-friedman_errored = friedmanchisquare(errored_mean_var.gson_memory_mean, errored_mean_var['j-simple_memory_mean'],
-                                     errored_mean_var['org.json_memory_mean'])
-friedman_undefined = friedmanchisquare(undefined_mean_var.gson_memory_mean, undefined_mean_var['j-simple_memory_mean'],
-                                       undefined_mean_var['org.json_memory_mean'])
-
+friedman_memory_correct = friedmanchisquare(correct_mean_var.gson_memory_mean, correct_mean_var['j-simple_memory_mean'],
+                                            correct_mean_var['org.json_memory_mean'])
+friedman_memory_errored = friedmanchisquare(errored_mean_var.gson_memory_mean, errored_mean_var['j-simple_memory_mean'],
+                                            errored_mean_var['org.json_memory_mean'])
+friedman_memory_undefined = friedmanchisquare(undefined_mean_var.gson_memory_mean,
+                                              undefined_mean_var['j-simple_memory_mean'],
+                                              undefined_mean_var['org.json_memory_mean'])
 """Friedman test for correct files:"""
-friedman_correct
+friedman_memory_correct
 """Friedman test for errored files:"""
-friedman_errored
-"""Friedman test for errored files:"""
-friedman_undefined
+friedman_memory_errored
+"""Friedman test for undefined files:"""
+friedman_memory_undefined
+
+"""
+### Friedman test references
+- https://www.sciencedirect.com/topics/medicine-and-dentistry/friedman-test
+- https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.friedmanchisquare.html
+- https://link.springer.com/chapter/10.1007/978-3-319-30634-6_7
+"""
