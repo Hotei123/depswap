@@ -40,20 +40,6 @@ def plot_3hist_group(cat_list, count_dict_tuple, x_tick_coords, plot_title, y_li
         plt.ylim(y_lim)
 
 
-def wilcoxon_p_val_from_2_dicts(dict_pair, cat_list):
-    """Returns the p-value of the Wilcoxon test, for the paired dictionaries of dict_pair (they have the same keys)"""
-    diff_list = [dict_pair[0][k] - dict_pair[1][k] for k in cat_list]
-    return wilcoxon(diff_list)[1]
-
-
-def wilcox_p_val_3_dicts(dict_3_list, cat_list):
-    """Returns the wilcoxon p-value of the test of these pairs of elements of dict_3_list: (first, second),
-    (first, third), and (second, third)"""
-    return wilcoxon_p_val_from_2_dicts((dict_3_list[0], dict_3_list[1]), cat_list), \
-           wilcoxon_p_val_from_2_dicts((dict_3_list[0], dict_3_list[2]), cat_list), \
-           wilcoxon_p_val_from_2_dicts((dict_3_list[1], dict_3_list[2]), cat_list)
-
-
 def get_mean_var(results_df, library):
     memory_cols = [col for col in results_df.columns if col[:11] == 'MemoryUsed_']
     return pd.concat([results_df[['File']],
