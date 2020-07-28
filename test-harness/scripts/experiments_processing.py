@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
-from scipy.stats import wilcoxon
+from scipy.stats import wilcoxon, kruskal, friedmanchisquare
 from numpy import round as npr
 
 
@@ -240,3 +240,20 @@ plot_memory_var(correct_mean_var)
 plot_memory_var(errored_mean_var)
 """_Undefined files memory variance_:"""
 plot_memory_var(undefined_mean_var)
+
+# https://www.sciencedirect.com/topics/medicine-and-dentistry/friedman-test
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.friedmanchisquare.html
+# https://link.springer.com/chapter/10.1007/978-3-319-30634-6_7
+friedman_correct = friedmanchisquare(correct_mean_var.gson_memory_mean, correct_mean_var['j-simple_memory_mean'],
+                                     correct_mean_var['org.json_memory_mean'])
+friedman_errored = friedmanchisquare(errored_mean_var.gson_memory_mean, errored_mean_var['j-simple_memory_mean'],
+                                     errored_mean_var['org.json_memory_mean'])
+friedman_undefined = friedmanchisquare(undefined_mean_var.gson_memory_mean, undefined_mean_var['j-simple_memory_mean'],
+                                       undefined_mean_var['org.json_memory_mean'])
+
+"""Friedman test for correct files:"""
+friedman_correct
+"""Friedman test for errored files:"""
+friedman_errored
+"""Friedman test for errored files:"""
+friedman_undefined
