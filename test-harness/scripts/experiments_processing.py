@@ -1,11 +1,10 @@
 """This file is better run with the command _streamlit run experiments_processing.py_, in order to visualize the output
 in the browser."""
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import streamlit as st
-from scipy.stats import wilcoxon, kruskal, friedmanchisquare
-from numpy import round as npr
+from scipy.stats import wilcoxon, friedmanchisquare
 
 
 def counts_from_series(series):
@@ -174,9 +173,10 @@ st.pyplot()
 """After looking at the data of each of the previous 3 plots, we had the null hypothesis $H_0$ that the counts of the 
 categories for each library come from the same population, and that therefore there is no diversity between the 
 libraries in this respect. The obtained high p-values of the Friedman test (see references at the end of the 
-document) agree with our hypothesis, and therefore, so far we have no evidence to reject it. This result makes sense, 
-since the structure of files is expected to be recognized by the libraries in more or less the same way. The results 
-of the tests are the following: """
+document) agree with our hypothesis, and therefore, so far we have no evidence to reject it. In the test, each sample 
+corresponded to each of the libraries gson, json-simple and org.json. This result makes sense, since the structure of 
+files is expected to be recognized by the libraries in more or less the same way. The results of the tests are the 
+following: """
 
 friedman_cat_count_correct = friedmanchisquare([count_dict['gson_correct'][key] for key in correct_cats],
                                                [count_dict['js_correct'][key] for key in correct_cats],
@@ -189,15 +189,15 @@ friedman_cat_count_undefined = friedmanchisquare([count_dict['gson_undefined'][k
                                                  [count_dict['orgjson_undefined'][key] for key in undefined_cats])
 
 """
-Friedman test for $H_0$ with correct files:
+Friedman test result for $H_0$ with correct files, for values of category counts:
 """
 friedman_cat_count_correct
 """
-Friedman test for $H_0$ with errored files:
+Friedman test result for $H_0$ with errored files, for values of category counts:
 """
 friedman_cat_count_errored
 """
-Friedman test for $H_0$ with undefined files:
+Friedman test result for $H_0$ with undefined files, for values of category counts:
 """
 friedman_cat_count_undefined
 
@@ -208,7 +208,7 @@ friedman_cat_count_undefined
 
 Most of times each single json file from the bench is read, the change in used heap is zero. That's why each file was
 read 1000 times, in order to obtain meaningful mean values of heap usage. The change in heap is stored in the columns
-_MemoryUsed_, as can be seen in the example in the introduction. 
+_MemoryUsed_, as can be seen in the example in the introduction for the file Gson_correct_results.csv. 
 """
 # Todo: find relationship between file size and heap use
 
@@ -231,7 +231,11 @@ errored_mean_var = gson_errored_mean_var.merge(js_errored_mean_var,
                                                on='File').merge(orgjson_errored_mean_var, on='File')
 undefined_mean_var = gson_undefined_mean_var.merge(js_undefined_mean_var,
                                                    on='File').merge(orgjson_undefined_mean_var, on='File')
-"""_Correct files mean memory_:"""
+"""The following plots show the mean values of heap, as well as the variance. There seems to be no obvious 
+explanation for the large bars in the plots. At least they are not apparently related to the size of the files. After 
+the plots, the values of the Friedman tests for the correct, errored and undefined files respectively, can be seen. 
+
+_Correct files mean memory_: """
 plot_memory_mean(correct_mean_var)
 """_Errored files mean memory_:"""
 plot_memory_mean(errored_mean_var)
@@ -251,11 +255,15 @@ friedman_memory_errored = friedmanchisquare(errored_mean_var.gson_memory_mean, e
 friedman_memory_undefined = friedmanchisquare(undefined_mean_var.gson_memory_mean,
                                               undefined_mean_var['j-simple_memory_mean'],
                                               undefined_mean_var['org.json_memory_mean'])
-"""Friedman test for correct files:"""
+"""In this case, the samples of the test corresponded also to the same 3 json libraries (each sample consists of the 
+list of mean values, having a mean value for each file of the bench), and the null hypothesis $H_0$ is that they were 
+drawn from the same population. The large p-values obtained do not allow us to reject $H_0$. 
+
+Friedman test result for correct files, for mean values of heap usage:"""
 friedman_memory_correct
-"""Friedman test for errored files:"""
+"""Friedman test result for errored files, for mean values of heap usage:"""
 friedman_memory_errored
-"""Friedman test for undefined files:"""
+"""Friedman test result for undefined files, for mean values of heap usage:"""
 friedman_memory_undefined
 
 """
